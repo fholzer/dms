@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"net/http"
@@ -538,10 +537,6 @@ func (me *mitmRespWriter) Write(b []byte) (int, error) {
 	return me.ResponseWriter.Write(b)
 }
 
-func (me *mitmRespWriter) CloseNotify() <-chan bool {
-	return me.ResponseWriter.(http.CloseNotifier).CloseNotify()
-}
-
 // Set the SCPD serve paths.
 func init() {
 	for _, s := range services {
@@ -735,7 +730,7 @@ func (server *Server) contentDirectoryInitialEvent(urls []*url.URL, sid string) 
 			continue
 		}
 		server.eventingLogger.Print(resp)
-		b, _ := ioutil.ReadAll(resp.Body)
+		b, _ := io.ReadAll(resp.Body)
 		server.eventingLogger.Println(string(b))
 		resp.Body.Close()
 	}
@@ -758,7 +753,7 @@ func (server *Server) contentDirectoryEventSubHandler(w http.ResponseWriter, r *
 		//
 		// TODO: Get eventing to work with the problematic TV.
 		t := time.Now()
-		<-w.(http.CloseNotifier).CloseNotify()
+		<-r.Context().Done()
 		server.eventingLogger.Printf("stalled subscribe connection went away after %s", time.Since(t))
 		return
 	}

@@ -9,7 +9,6 @@ import (
 	"image"
 	"image/png"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/signal"
@@ -317,7 +316,7 @@ func (cache *fFprobeCache) save(path string) error {
 	cache.Lock()
 	items := cache.c.Items()
 	cache.Unlock()
-	f, err := ioutil.TempFile(filepath.Dir(path), filepath.Base(path))
+	f, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path))
 	if err != nil {
 		return err
 	}
@@ -347,7 +346,7 @@ func (cache *fFprobeCache) save(path string) error {
 
 func getIconReader(path string) (io.ReadCloser, error) {
 	if path == "" {
-		return ioutil.NopCloser(bytes.NewReader(defaultIcon)), nil
+		return io.NopCloser(bytes.NewReader(defaultIcon)), nil
 	}
 	return os.Open(path)
 }
