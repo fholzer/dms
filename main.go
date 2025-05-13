@@ -149,7 +149,7 @@ func mainErr() error {
 	flag.Parse()
 	if flag.NArg() != 0 {
 		flag.Usage()
-		return fmt.Errorf("%s: %s\n", "unexpected positional arguments", flag.Args())
+		return fmt.Errorf("%s: %s", "unexpected positional arguments", flag.Args())
 	}
 
 	logger := log.Default.WithNames("main")
